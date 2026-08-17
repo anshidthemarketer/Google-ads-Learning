@@ -1,0 +1,261 @@
+
+<style>
+  .plan-wrap { padding: 1.5rem 0; font-family: var(--font-sans); }
+  .plan-header { margin-bottom: 1.5rem; }
+  .plan-header h2 { font-size: 20px; font-weight: 500; color: var(--text-primary); margin: 0 0 4px; }
+  .plan-header p { font-size: 13px; color: var(--text-secondary); margin: 0; }
+  .progress-bar { background: var(--surface-1); border-radius: 99px; height: 6px; margin: 12px 0 1.5rem; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 99px; background: var(--fill-accent); transition: width 0.4s ease; }
+  .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1.25rem; }
+  .tab { font-size: 12px; padding: 5px 12px; border-radius: 99px; border: 0.5px solid var(--border); background: transparent; color: var(--text-secondary); cursor: pointer; transition: all 0.15s; }
+  .tab.active { background: var(--fill-accent); color: var(--on-accent); border-color: var(--fill-accent); }
+  .session-card { background: var(--surface-2); border: 0.5px solid var(--border); border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; }
+  .session-card.done { border-color: var(--border-success); background: var(--bg-success); }
+  .session-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+  .session-meta { display: flex; align-items: center; gap: 8px; }
+  .session-num { font-size: 11px; font-weight: 500; background: var(--bg-accent); color: var(--text-accent); padding: 3px 8px; border-radius: 99px; }
+  .session-num.done-badge { background: var(--bg-success); color: var(--text-success); }
+  .session-time { font-size: 11px; color: var(--text-muted); }
+  .check-btn { width: 28px; height: 28px; border-radius: 50%; border: 0.5px solid var(--border-strong); background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 14px; flex-shrink: 0; transition: all 0.15s; }
+  .check-btn.checked { background: var(--fill-success); border-color: var(--fill-success); color: white; }
+  .session-title { font-size: 15px; font-weight: 500; color: var(--text-primary); margin: 0 0 4px; }
+  .session-focus { font-size: 12px; color: var(--text-accent); font-weight: 500; margin-bottom: 10px; }
+  .section-label { font-size: 11px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin: 10px 0 6px; }
+  .topics { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+  .topic-tag { font-size: 12px; padding: 4px 10px; border-radius: 99px; background: var(--surface-1); border: 0.5px solid var(--border); color: var(--text-secondary); }
+  .resources { display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px; }
+  .resource-item { font-size: 12px; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; }
+  .resource-item i { color: var(--text-accent); font-size: 14px; }
+  .review-box { background: var(--surface-1); border-radius: var(--radius); padding: 10px 12px; border-left: 2px solid var(--fill-accent); margin-top: 10px; }
+  .review-box .section-label { margin: 0 0 6px; }
+  .review-questions { font-size: 12px; color: var(--text-secondary); line-height: 1.6; }
+  .review-questions li { margin-bottom: 3px; }
+  .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; margin-bottom: 1.5rem; }
+  .stat-card { background: var(--surface-1); border-radius: var(--radius); padding: 10px 12px; }
+  .stat-label { font-size: 11px; color: var(--text-muted); margin-bottom: 3px; }
+  .stat-val { font-size: 20px; font-weight: 500; color: var(--text-primary); }
+  .stat-val.accent { color: var(--text-accent); }
+  .ask-btn { width: 100%; margin-top: 12px; padding: 9px; font-size: 13px; border-radius: var(--radius); border: 0.5px solid var(--border-strong); background: transparent; color: var(--text-secondary); cursor: pointer; transition: all 0.15s; }
+  .ask-btn:hover { background: var(--surface-1); color: var(--text-primary); }
+  .filter-bar { display: flex; gap: 6px; margin-bottom: 1rem; }
+  .filter-btn { font-size: 12px; padding: 5px 12px; border-radius: 99px; border: 0.5px solid var(--border); background: transparent; color: var(--text-secondary); cursor: pointer; }
+  .filter-btn.active { background: var(--surface-1); color: var(--text-primary); border-color: var(--border-strong); }
+</style>
+
+<div class="plan-wrap">
+  <h2 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">Google Ads 20-hour learning plan — 10 sessions of 2 hours each</h2>
+  
+  <div class="plan-header">
+    <h2>Google Ads — 20-hour mastery plan</h2>
+    <p>10 sessions · 2 hours each · 15-min review · 2026 resources</p>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-label">Total hours</div><div class="stat-val">20</div></div>
+    <div class="stat-card"><div class="stat-label">Sessions done</div><div class="stat-val accent" id="done-count">0</div></div>
+    <div class="stat-card"><div class="stat-label">Hours logged</div><div class="stat-val accent" id="hours-done">0</div></div>
+    <div class="stat-card"><div class="stat-label">Completion</div><div class="stat-val accent" id="pct-done">0%</div></div>
+  </div>
+
+  <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="setFilter('all', this)">All sessions</button>
+    <button class="filter-btn" onclick="setFilter('todo', this)">To do</button>
+    <button class="filter-btn" onclick="setFilter('done', this)">Completed</button>
+  </div>
+
+  <div id="sessions-container"></div>
+</div>
+
+<script>
+const sessions = [
+  {
+    id: 1,
+    title: "How Google Ads works — the auction, intent, and money flow",
+    focus: "🎯 Foundation — don't skip this, everything builds on it",
+    topics: ["Auction mechanics", "Quality Score", "Ad Rank formula", "CPC vs CPM", "Match types overview", "The 80/20 of campaign structure"],
+    resources: [
+      { icon: "ti-brand-youtube", text: "Google Skillshop: Google Ads Fundamentals (free, updated 2025)" },
+      { icon: "ti-player-play", text: "YouTube: Aaron Young '2025 Google Ads Auction Explained'" },
+      { icon: "ti-article", text: "WordStream: How Google Ads Bidding Works (2025 edition)" }
+    ],
+    review: ["Can you explain Quality Score in 3 sentences?", "What's the difference between Ad Rank and CPC?", "Why does match type matter more than budget?"]
+  },
+  {
+    id: 2,
+    title: "Search campaigns — the revenue engine",
+    focus: "💰 This is where 60% of Google Ads ROI lives",
+    topics: ["Campaign + ad group structure", "Keyword research with intent", "Exact vs Phrase vs Broad", "Negative keywords (your #1 lever)", "RSA best practices", "Budget pacing"],
+    resources: [
+      { icon: "ti-brand-youtube", text: "YouTube: Surfside PPC — Search Campaign Build from Scratch 2025" },
+      { icon: "ti-tool", text: "Google Keyword Planner + SEMrush for intent clustering" },
+      { icon: "ti-article", text: "Optmyzr Blog: Match Type Strategy 2025" }
+    ],
+    review: ["Build a 3-ad-group structure for any product you know well", "List 10 negatives you'd add on Day 1", "What keyword intent signals buying vs browsing?"]
+  },
+  {
+    id: 3,
+    title: "Keyword strategy + negative keywords — the money filter",
+    focus: "🔍 Negatives alone can save 30–40% of wasted spend",
+    topics: ["Search term reports (weekly habit)", "Negative keyword lists", "Keyword intent mapping", "Long-tail vs head terms", "Competitor keywords", "SQR analysis workflow"],
+    resources: [
+      { icon: "ti-brand-youtube", text: "YouTube: Miles Beckler — Negative Keyword Masterclass" },
+      { icon: "ti-tool", text: "Google Ads Search Terms Report — live practice" },
+      { icon: "ti-article", text: "Search Engine Journal: Negative Keyword Strategy 2025" }
+    ],
+    review: ["Run a search term report on a real or demo account", "Categorize 20 search terms as buy/browse/trash", "How often should you review search terms and why?"]
+  },
+  {
+    id: 4,
+    title: "Ad copywriting that converts — RSAs, headlines, hooks",
+    focus: "✍️ Great copy = better CTR = lower CPC. It compounds.",
+    topics: ["RSA structure: 15 headlines, 4 descriptions", "Pinning strategy", "Ad strength vs actual performance", "Emotional vs functional hooks", "CTA formulas", "A/B testing copy"],
+    resources: [
+      { icon: "ti-brand-youtube", text: "YouTube: Paid Media Pros — RSA Copywriting 2025" },
+      { icon: "ti-article", text: "WordStream: Google Ads Headline Formulas That Work" },
+      { icon: "ti-tool", text: "Practise: Write 3 RSAs for a real product you work with" }
+    ],
+    review: ["Write one RSA with 15 headlines for your own business or client", "What's a higher-intent CTA vs a brand-awareness CTA?", "Why is Ad Strength a bad optimization metric?"]
+  },
+  {
+    id: 5,
+    title: "Bidding strategies — manual vs smart vs automated",
+    focus: "🤖 Smart bidding is powerful but needs the right data first",
+    topics: ["Manual CPC — when and why", "Target CPA", "Target ROAS", "Maximize Conversions", "Enhanced CPC (eCPC)", "Bid strategy learning periods", "Data thresholds before going smart"],
+    resources: [
+      { icon: "ti-brand-youtube", text: "YouTube: Google Ads — Official Bidding Strategy Guide 2025" },
+      { icon: "ti-article", text: "Hanapin Marketing: Smart Bidding Secrets 2025" },
+      { icon: "ti-article", text: "PPC Hero: When to Use Manual vs Automated Bidding" }
+    ],
+    review: ["When should you NOT use smart bidding?", "What conversion volume threshold triggers tCPA switch?", "What's the risk of setting tROAS too high?"]
+  },
+  {
+    id: 6,
+    title: "Conversion tracking — the nervous system of your account",
+    focus: "⚡ Without this, everything else is guesswork",
+    topics: ["Google Tag setup", "GA4 + Google Ads linking", "Conversion actions (purchase, lead, call)", "Primary vs secondary conversions", "Attribution models (data-driven vs last-click)", "Micro-conversions"],
+    resources: [
+      { icon: "ti-brand-youtube", text: "YouTube: Loves Data — Google Ads Conversion Tracking Setup 2025" },
+      { icon: "ti-tool", text: "Google Tag Manager — live account setup practice" },
+      { icon: "ti-article", text: "Analytics Mania: GA4 + Google Ads Integration Guide" }
+    ],
+    review: ["Set up one conversion action in a demo account", "What's the difference between 'every conversion' and 'one conversion'?", "Why does attribution model choice change your bid strategy behavior?"]
+  },
+  {
+    id: 7,
+    title: "Performance Max — how to use it without losing control",
+    focus: "🚀 PMax drives scale but needs guardrails — know both",
+    topics: ["PMax vs Search — when each wins", "Asset groups strategy", "Audience signals (not targeting)", "Brand exclusions", "Search themes 2025 update", "PMax reporting limitations", "Budget allocation logic"],
+    resources: [
+      { icon: "ti-brand-youtube", text: "YouTube: Aaron Young — PMax Masterclass 2025" },
+      { icon: "ti-article", text: "Search Engine Land: PMax Best Practices 2025" },
+      { icon: "ti-article", text: "Optmyzr: Performance Max Strategy Guide" }
+    ],
+    review: ["Name 3 scenarios where Search beats PMax", "What are audience signals and do they limit reach?", "How do you stop PMax from cannibalizing your brand terms?"]
+  },
+  {
+    id: 8,
+    title: "Audience targeting + remarketing — reach the right people",
+    focus: "🎯 Layering audiences cuts CPA by 20–50% in most accounts",
+    topics: ["Customer Match", "Similar segments", "In-market audiences", "RLSA (remarketing for search)", "Audience layering vs targeting", "Observation vs targeting mode", "1P data strategy 2025"],
+    resources: [
+      { icon: "ti-brand-youtube", text: "YouTube: Surfside PPC — Google Ads Audiences 2025" },
+      { icon: "ti-article", text: "WordStream: RLSA Strategy Guide" },
+      { icon: "ti-article", text: "Search Engine Journal: 1P Data in Google Ads 2025" }
+    ],
+    review: ["What's the difference between observation and targeting for audiences?", "Design a 3-layer RLSA strategy for an e-commerce store", "Why is Customer Match more valuable than interest targeting?"]
+  },
+  {
+    id: 9,
+    title: "Campaign optimization — the weekly routine that wins",
+    focus: "📈 90% of results come from 5 repeatable habits",
+    topics: ["Search term reports", "Quality Score audits", "Impression share analysis", "Auction insights", "Ad schedule bid adjustments", "Device bid adjustments", "Budget pacing checks", "Recommendations tab — what to ignore"],
+    resources: [
+      { icon: "ti-brand-youtube", text: "YouTube: PPC Mastery — Weekly Optimization Checklist 2025" },
+      { icon: "ti-article", text: "Hanapin: Google Ads Account Audit Checklist (free download)" },
+      { icon: "ti-tool", text: "Build your own Google Ads weekly checklist in Notion/Sheets" }
+    ],
+    review: ["What are the 5 things you check every week, in order?", "When should you increase budget vs improve Quality Score?", "What Recommendations should you almost always decline?"]
+  },
+  {
+    id: 10,
+    title: "Reporting, analytics + scaling — thinking like a strategist",
+    focus: "📊 Turn data into decisions — this is what clients pay for",
+    topics: ["Key metrics: ROAS, CPA, CVR, CPL, IS", "GA4 + Google Ads reporting", "Looker Studio dashboards", "Scaling: horizontal vs vertical", "Budget scaling without breaking performance", "Competitor intelligence with Auction Insights", "Presenting results to stakeholders"],
+    resources: [
+      { icon: "ti-brand-youtube", text: "YouTube: Loves Data — Google Ads Reporting with GA4 2025" },
+      { icon: "ti-tool", text: "Looker Studio: Build a live Google Ads dashboard (template available)" },
+      { icon: "ti-article", text: "PPC Hero: How to Scale Google Ads Without Killing Performance" }
+    ],
+    review: ["Build a one-page performance summary for a client", "What metrics signal 'ready to scale' vs 'fix first'?", "If CPA is rising, what's your 5-step diagnosis?"]
+  }
+];
+
+let completed = new Set();
+let currentFilter = 'all';
+
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderSessions();
+}
+
+function toggleDone(id) {
+  if (completed.has(id)) completed.delete(id);
+  else completed.add(id);
+  updateStats();
+  renderSessions();
+}
+
+function updateStats() {
+  const n = completed.size;
+  document.getElementById('done-count').textContent = n;
+  document.getElementById('hours-done').textContent = n * 2;
+  document.getElementById('pct-done').textContent = Math.round(n / 10 * 100) + '%';
+  document.getElementById('prog-fill').style.width = (n / 10 * 100) + '%';
+}
+
+function renderSessions() {
+  const container = document.getElementById('sessions-container');
+  let html = '';
+  sessions.forEach(s => {
+    const done = completed.has(s.id);
+    if (currentFilter === 'todo' && done) return;
+    if (currentFilter === 'done' && !done) return;
+    const topics = s.topics.map(t => `<span class="topic-tag">${t}</span>`).join('');
+    const resources = s.resources.map(r => `<div class="resource-item"><i class="ti ${r.icon}" aria-hidden="true"></i>${r.text}</div>`).join('');
+    const qs = s.review.map(q => `<li>${q}</li>`).join('');
+    html += `
+      <div class="session-card${done ? ' done' : ''}">
+        <div class="session-head">
+          <div>
+            <div class="session-meta">
+              <span class="session-num${done ? ' done-badge' : ''}">Session ${s.id}</span>
+              <span class="session-time">2 hrs + 15 min review</span>
+            </div>
+          </div>
+          <button class="check-btn${done ? ' checked' : ''}" onclick="toggleDone(${s.id})" aria-label="${done ? 'Mark incomplete' : 'Mark complete'}">
+            <i class="ti ${done ? 'ti-check' : 'ti-circle'}" aria-hidden="true"></i>
+          </button>
+        </div>
+        <div class="session-title">${s.title}</div>
+        <div class="session-focus">${s.focus}</div>
+        <div class="section-label">Core topics</div>
+        <div class="topics">${topics}</div>
+        <div class="section-label">Best resources</div>
+        <div class="resources">${resources}</div>
+        <div class="review-box">
+          <div class="section-label">15-min session review — answer these</div>
+          <ul class="review-questions">${qs}</ul>
+        </div>
+        <button class="ask-btn" onclick="sendPrompt('Go deeper on Session ${s.id}: ${s.title}. Give me practice exercises, common mistakes, and advanced tips.')">Go deeper on this session ↗</button>
+      </div>`;
+  });
+  if (!html) html = '<p style="color:var(--text-muted);font-size:14px;padding:1rem 0;">No sessions match this filter.</p>';
+  container.innerHTML = html;
+}
+
+renderSessions();
+</script>
